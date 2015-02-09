@@ -1,0 +1,7 @@
+#!/usr/bin/env node
+debug = require('debug') 'sunshine'
+sunshine = require '../app'
+
+app = sunshine.app
+server = sunshine.server
+io = sunshine.io
