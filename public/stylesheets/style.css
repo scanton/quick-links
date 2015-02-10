@@ -1,0 +1,11 @@
+.jumbotron .input-group {
+  padding: 0.5em 1em;
+}
+.jumbotron button {
+  font-size: 18pt;
+  padding: 0.25em 0.5em;
+}
+.jumbotron input {
+  font-size: 18pt;
+  padding: 1em;
+}
