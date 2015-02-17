@@ -1,0 +1,10 @@
+.container-fluid.live-link-tracker
+	.row
+		.modal-header
+			h2 Live Link Tracker
+		.modal-body
+			.share-link Share this link to observe live traffic to your content
+			.well 
+				a(ng-href='http://kweak.com/l/{{linkData.hashId}}') http://kweak.com/l/{{linkData.hashId}}
+			button.btn.btn-default.pull-right(ng-click='cancel()') Cancel
+			.clearfix

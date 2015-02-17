@@ -8,7 +8,7 @@ app = angular.module 'main', [
 app.factory 'socket', (socketFactory) ->
 	socketFactory()
 
-app.controller 'MainController', ($scope, socket, $log) ->
+app.controller 'MainController', ($scope, $modal, socket, $log) ->
 	id = new Fingerprint({ie_activex: true}).get()
 	id3d = new Fingerprint({canvas: true}).get()
 	
@@ -23,12 +23,24 @@ app.controller 'MainController', ($scope, socket, $log) ->
 	$scope.submitIdLink = (data) ->
 		socket.emit 'create:idLink', data
 
+	#--linkTrackerController is used twice below
+	linkTrackerController = ($scope, $modalInstance, $log) ->
+		$scope.cancel = ->
+			$modalInstance.dismiss 'cancel'
 	socket.on 'created-success:link', (data) ->
-		$log.info data
-
+		$scope.linkData = data
+		$modal.open
+			templateUrl: '/partials/modals/live-link-tracker'
+			scope: $scope
+			controller: linkTrackerController
 	socket.on 'created-success:idLink', (data) ->
-		$log.info data
-
+		$scope.linkData = data
+		$modal.open
+			templateUrl: '/partials/modals/live-link-tracker'
+			scope: $scope
+			controller: linkTrackerController
+	#--/linkTrackerController
+	
 	socket.on 'warn', (data) ->
 		$log.warn data
 

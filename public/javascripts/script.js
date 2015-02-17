@@ -7,8 +7,8 @@
     return socketFactory();
   });
 
-  app.controller('MainController', function($scope, socket, $log) {
-    var id, id3d;
+  app.controller('MainController', function($scope, $modal, socket, $log) {
+    var id, id3d, linkTrackerController;
     id = new Fingerprint({
       ie_activex: true
     }).get();
@@ -27,11 +27,26 @@
     $scope.submitIdLink = function(data) {
       return socket.emit('create:idLink', data);
     };
+    linkTrackerController = function($scope, $modalInstance, $log) {
+      return $scope.cancel = function() {
+        return $modalInstance.dismiss('cancel');
+      };
+    };
     socket.on('created-success:link', function(data) {
-      return $log.info(data);
+      $scope.linkData = data;
+      return $modal.open({
+        templateUrl: '/partials/modals/live-link-tracker',
+        scope: $scope,
+        controller: linkTrackerController
+      });
     });
     socket.on('created-success:idLink', function(data) {
-      return $log.info(data);
+      $scope.linkData = data;
+      return $modal.open({
+        templateUrl: '/partials/modals/live-link-tracker',
+        scope: $scope,
+        controller: linkTrackerController
+      });
     });
     socket.on('warn', function(data) {
       return $log.warn(data);
