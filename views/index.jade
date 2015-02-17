@@ -3,18 +3,54 @@ extends layout
 block content
 	.container-fluid
 		.row
-			.jumbotron
-				h1.text-center Kweak
-				h2.text-center Real-Time Marketing Intelligence
+			.page-header.logo
+				h1
+					span.glyphicon.glyphicon-dashboard 
+					| Kweak
+					small &nbsp;- Live Marketing Intelligence
 		.row
-			.jumbotron
-				h3 Live Link Tracking:
-				.input-group
-					input.form-control(type='text', placeholder='Paste a link to track it live')
-					span.input-group-btn
-						button.btn.btn-primary(type='button') Live Track Link!
+			.col-xs-12
+				.jumbotron
+					h2 
+						span.glyphicon.glyphicon-link
+						| &nbsp;Live Link Tracking:
+					p Use live links to share content and track its consumption across social networks, the web or group messaging in real-time.
+					.input-group
+						input.form-control(ng-model='url', type='text', placeholder='Paste a link to track it live')
+						span.input-group-btn
+							button.btn.btn-primary(type='button', ng-click='submitLink(url)')
+								span.glyphicon.glyphicon-link
+								| &nbsp;Live Track!
 		.row
-			.jumbotron
-				h3 Live Website Analytics
-				a.btn.btn-primary(href='/client') Download Kweak Client
+			.col-xs-12
+				.jumbotron
+					h2 
+						span.glyphicon.glyphicon-user
+						| &nbsp;Identify Users and Track them in Real-Time
+					p Give this link to an individual so that you can identify them when they visit your links or web pages.
+					.container-fluid.form-inputs
+						.row
+							.col-xs-12
+								input.form-control(ng-model='idLinkData.url', type='text', placeholder='Paste a link to share with an individual')
+							.col-xs-12.col-sm-6		
+								input.form-control(ng-model='idLinkData.firstName', type='text', placeholder='First Name (optional)')
+							.col-xs-12.col-sm-6
+								input.form-control(ng-model='idLinkData.lastName', type='text', placeholder='Last Name (optional)')
+							.col-xs-12
+								input.form-control(ng-model='idLinkData.email', type='text', placeholder='E-Mail Address (optional)')
+							small The first person to click this link will be considered to be the person to whom this identity belongs.
+							button.btn.btn-primary.pull-right(type='button', ng-click='submitIdLink(idLinkData)')
+								span.glyphicon.glyphicon-link
+								| &nbsp;Create ID Link
+							.clearfix
+		.row
+			.col-xs-12
+				.jumbotron
+					h2 
+						span.glyphicon.glyphicon-equalizer
+						| &nbsp;Live Website Traffic Analytics
+					p.text-center Add this javascript file to your website, just above the closing body tag.
+					.well.text-center
+						h3
+							a(href='http://kweak.com/javascripts/lib/kweak.js') http://kweak.com/javascripts/lib/kweak.js
 				

@@ -1,5 +1,28 @@
-.jumbotron .input-group {
-  padding: 0.5em 1em;
+body {
+  background: url("/images/kweak-background.jpg") no-repeat center center fixed;
+  background-size: cover;
+}
+.logo {
+  color: #fff;
+  margin: 10px 0 14px;
+}
+.logo h1 {
+  margin: 0;
+}
+.logo h1 small {
+  color: #fff;
+}
+.logo .glyphicon {
+  border: 3px solid #fff;
+  padding: 2px;
+  margin: 0 0.25em;
+  font-size: 15pt;
+  border-radius: 33%;
+  overflow: hidden;
+}
+.jumbotron {
+  background: rgba(255,255,255,0.75);
+  color: #00224c;
 }
 .jumbotron button {
   font-size: 18pt;
@@ -8,4 +31,14 @@
 .jumbotron input {
   font-size: 18pt;
   padding: 1em;
+}
+.jumbotron .form-inputs .col-xs-12,
+.jumbotron .form-inputs .col-sm-6 {
+  margin-bottom: 0.75em;
+}
+.jumbotron .well {
+  padding: 0;
+}
+.jumbotron .input-group {
+  padding: 0.5em 1em;
 }

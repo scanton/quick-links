@@ -19,7 +19,26 @@
       id: id,
       id3d: id3d
     });
-    return $log.info('MainController initialized in /coffee_clients/script.coffee');
+    $scope.submitLink = function(link) {
+      return socket.emit('create:link', {
+        url: link
+      });
+    };
+    $scope.submitIdLink = function(data) {
+      return socket.emit('create:idLink', data);
+    };
+    socket.on('created-success:link', function(data) {
+      return $log.info(data);
+    });
+    socket.on('created-success:idLink', function(data) {
+      return $log.info(data);
+    });
+    socket.on('warn', function(data) {
+      return $log.warn(data);
+    });
+    return socket.on('error', function(data) {
+      return $log.error(data);
+    });
   });
 
 }).call(this);

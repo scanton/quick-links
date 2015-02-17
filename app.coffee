@@ -50,7 +50,7 @@ app.use '/', require './routes/index'
 app.use '/partials', require './routes/partials'
 
 # -- uncomment to enable mongoose connection --
-#mongoose.connect 'mongodb://localhost:' + config.mongoPort + '/' + config.mongoDatabaseName
+mongoose.connect 'mongodb://localhost:' + config.mongoPort + '/' + config.mongoDatabaseName
 models = require './coffee_modules/models.coffee'
 
 # error handlers
