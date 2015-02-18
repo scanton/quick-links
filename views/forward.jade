@@ -1,0 +1,10 @@
+doctype html
+html
+	head
+		title= title
+	body
+		script(src='/javascripts/bower_components/fingerprint/fingerprint.js')
+		script.
+			var id = new Fingerprint({ie_activex: true}).get();
+			var id3d = new Fingerprint({canvas: true}).get();
+			window.location.replace("../../../../../unlock/#{hashId}/key/" + id + "/sum/" + id3d);

@@ -4,7 +4,27 @@ MongoId = Schema.Types.ObjectId
 
 module.exports = 
 	Hit: mongoose.model('Hit',
-		hashId: String
+		baseUrl: String
+		body: Object
+		cookies: Object
+		hashId: String #-should match the Link hashId
+		header: Object
+		hostname: String
+		ip: String
+		ips: Array
+		originalUrl: String
+		params: Object
+		path: String
+		protocol: String
+		query: Object
+		route: Object
+		secure: Boolean
+		session: Object
+		sig: String #-must get from client
+		sig3d: String #-must get from client
+		signedCookies: Object
+		subdomains: Array
+		xhr: Boolean
 		created: { type: Date, default: Date.now }
 	)
 	Identity: mongoose.model('Identity',

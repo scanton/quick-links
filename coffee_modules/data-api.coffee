@@ -25,6 +25,14 @@ upsert = (model, query, data, callback) ->
 	) if model
 
 module.exports = 
+	addHitToLink: (hitId, linkId, callback) ->
+		models.Link.findByIdAndUpdate(
+			linkId
+			{ $push: { 'hits': hitId } }
+			{}
+			(err, result) ->
+				callback result if callback
+		)
 	isLinkHashUnique: (hash, callback) ->
 		models.Link.findOne {hash: hash}, (err, rows) ->
 			console.error err if err
@@ -44,4 +52,10 @@ module.exports =
 	upsertLink: (data, callback) ->
 		if data && data.url && data.hashId
 			upsert models.Link, {hashId: data.hashId}, data, callback
+
+	insertHit: (data, callback) ->
+		if data
+			models.Hit.create data, (err, result) ->
+				console.error err if err
+				callback result
 
