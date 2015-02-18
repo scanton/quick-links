@@ -8,7 +8,7 @@ module.exports =
 		body: Object
 		cookies: Object
 		hashId: String #-should match the Link hashId
-		header: Object
+		headers: Object
 		hostname: String
 		ip: String
 		ips: Array
