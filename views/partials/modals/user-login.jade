@@ -1,0 +1,14 @@
+.container-fluid.user-login-form
+	.row
+		.modal-header
+			h2 User Login
+		.modal-body
+			form(ng-submit='login(username, password)')
+				.form-group
+					input.form-control(ng-model='username', name='username', type='text', placeholder='Username')
+				.form-group
+					input.form-control(ng-model='password', name='password', type='password', placeholder='Password')
+				button.btn.btn-primary.pull-right(type='submit') Login
+				button.btn.btn-warning.pull-right(ng-click='cancel()') Cancel
+				a(ng-show='registrationAvailable', ng-click='showRegisterModal()', href='#') Register
+				.clearfix

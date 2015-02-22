@@ -42,3 +42,13 @@ body {
 .jumbotron .input-group {
   padding: 0.5em 1em;
 }
+.modal-body input {
+  font-size: 16pt;
+  padding: 1em;
+}
+.modal-body button {
+  margin: 0 0.25em;
+}
+.heading button {
+  margin: 0.75em;
+}

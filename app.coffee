@@ -46,7 +46,7 @@ app.use coffeescript
     dest: __dirname + '/public/javascripts'
     prefix: '/javascripts'
 app.use express.static(path.join(__dirname, 'public'))
-app.use '/', require './routes/index'
+app.use '/', require('./routes/index') socketManager
 app.use '/partials', require './routes/partials'
 
 # -- uncomment to enable mongoose connection --

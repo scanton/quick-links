@@ -28,12 +28,25 @@ module.exports =
 		created: { type: Date, default: Date.now }
 	)
 	Identity: mongoose.model('Identity',
-		firstName: String
-		lastName: String
-		email: String
+		firstName: {type:String , trim: true }
+		lastName: {type:String , trim: true }
+		email: {type:String , trim: true }
 		sig: String
 		sig3d: String
 		ip: String
+		modified: { type: Date, default: Date.now }
+		created: { type: Date, default: Date.now }
+	)
+	IpDetail: mongoose.model('IpDetail',
+		ipAddress: { type: String, unique: true, required: true }
+		addressType: String
+		isp: String
+		timezone: String
+		country: String
+		stateRegion: String
+		city: String
+		coordinates: Array
+		modified: { type: Date, default: Date.now }
 		created: { type: Date, default: Date.now }
 	)
 	Link: mongoose.model('Link',
@@ -46,10 +59,6 @@ module.exports =
 		]
 		intendedRecepient: { type: MongoId, ref: 'Identity' }
 		isActive: { type: Boolean, default: 1 }
-		created: { type: Date, default: Date.now }
-	)
-	PageView: mongoose.model('PageView',
-		url: String
 		created: { type: Date, default: Date.now }
 	)
 	User: mongoose.model('User',

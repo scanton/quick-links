@@ -1,0 +1,10 @@
+.container-fluid.failed-login-message
+	.row
+		.modal-header
+			h2 Invalid Login
+		.modal-body
+			p Your username and/or password are incorrect.
+			button.btn.btn-primary.pull-right(ng-click='tryAgain()', ng-show='loginAttempts < 3') Try Again ({{3 - loginAttempts}})
+			button.btn.btn-warning.pull-right(ng-click='cancel()') Cancel
+			button.btn.btn-info.pull-right(ng-click='forgotPassword()') Forgot Password
+			.clearfix

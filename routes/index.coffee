@@ -26,32 +26,34 @@ hitLink = (req, linkId, callback) ->
 		signedCookies: req.signedCookies
 		subdomains: req.subdomains
 		xhr: req.xhr
-	db.insertHit hitData, (result) ->
-		db.addHitToLink result._id, linkId
-		callback result if callback
+	db.insertHit hitData, (hitData) ->
+		if hitData
+			db.addHitToLink hitData._id, linkId, (linkData) ->
+				callback { hit: hitData, link: linkData } if callback
 
-router.get '/', (req, res) ->
-	res.render 'index',
-		title: 'Kweak - Quick Links'
+module.exports = (socketManager) ->
 
-router.get '/key/:hashId', (req, res) ->
-	res.render 'forward',
-		title: 'Kweak - Secure Links'
-		hashId: req.params.hashId
+	router.get '/', (req, res) ->
+		res.render 'index',
+			title: 'Kweak - Quick Links'
 
-router.get '/unlock/:hashId/key/:sig/sum/:sig3d', (req, res) ->
-	hashId = req.params.hashId
-	sig = req.params.sig
-	sig3d = req.params.sig3d
-	if hashId
-		db.getLinkByHash hashId, (linkData) ->
-			if linkData
-				hitLink req, linkData._id, (hitResult) ->
-					console.log hitResult
-				res.redirect 303, linkData.url
-			else
-				res.redirect 303, 'http://meanrazorback.com'
-	else
-		res.redirect 303, 'http://kweak.com'
-
-module.exports = router
+	router.get '/key/:hashId', (req, res) ->
+		res.render 'forward',
+			title: 'Kweak - Secure Links'
+			hashId: req.params.hashId
+			
+	router.get '/unlock/:hashId/key/:sig/sum/:sig3d', (req, res) ->
+		hashId = req.params.hashId
+		sig = req.params.sig
+		sig3d = req.params.sig3d
+		if hashId
+			db.getLinkByHash hashId, (linkData) ->
+				if linkData
+					hitLink req, linkData._id, (hitResult) ->
+						socketManager.emitLinkHit hitResult
+					res.redirect 303, linkData.url
+				else
+					res.redirect 303, 'http://meanrazorback.com'
+		else
+			res.redirect 303, 'http://kweak.com'
+	router

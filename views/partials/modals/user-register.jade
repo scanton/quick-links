@@ -1,0 +1,30 @@
+.container-fluid.user-register-form
+	.row
+		.modal-header
+			h2 User Registration
+		.modal-body
+			form(ng-submit='register(regData)')
+				.container-fluid
+					.row
+						.col-xs-6
+							.form-group
+								input.form-control(ng-model='regData.firstName', name='first-name', type='text', placeholder='First Name')
+						.col-xs-6
+							.form-group
+								input.form-control(ng-model='regData.lastName', name='last-name', type='text', placeholder='Last Name')
+					.row
+						.col-xs-1
+						.col-xs-10
+							.form-group
+								input.form-control(ng-model='regData.username', name='username', type='text', placeholder='Username')
+						.col-xs-1
+					.row
+						.col-xs-1
+						.col-xs-10
+							.form-group
+								input.form-control(ng-model='regData.password', name='password', type='password', placeholder='Password')
+						.col-xs-1
+					.row
+						button.btn.btn-primary.pull-right(type='submit') Register
+						button.btn.btn-warning.pull-right(ng-click='cancel()') Cancel
+						.clearfix

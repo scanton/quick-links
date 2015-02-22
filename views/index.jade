@@ -2,7 +2,8 @@ extends layout
 
 block content
 	.container-fluid
-		.row
+		.row.heading
+			button.pull-right.button.btn.btn-primary(ng-click='showLoginModal()', ng-show='!userAuthenticated') Login
 			.page-header.logo
 				h1
 					span.glyphicon.glyphicon-dashboard 
@@ -44,6 +45,24 @@ block content
 								span.glyphicon.glyphicon-link
 								| &nbsp;Create ID Link
 							.clearfix
+		.row
+			.col-xs-12
+				.jumbotron
+					h2 
+						span.glyphicon.glyphicon-globe
+						| &nbsp;Geo Tracking with 
+						a(href='http://kloce.com', target='_kloce') Kloce
+					p Send a link to someone's mobile device that allows them to share their GPS location with you in real-time.
+					//.input-group
+						input.form-control(ng-model='geoLink', type='text', placeholder='Paste a link to geo track it')
+						span.input-group-btn
+							button.btn.btn-primary(type='button', ng-click='submitGeoLink(geoLink)')
+								span.glyphicon.glyphicon-link
+								| &nbsp;Geo Track!
+					small Perfect for organizing get-togethers and other real-world interactions 
+					//.pull-right GeoLocation provided by&nbsp
+						a(href='http://kloce.com', target='_kloce') Kloce
+					//.clearfix
 		.row
 			.col-xs-12
 				.jumbotron
