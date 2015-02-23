@@ -3,6 +3,9 @@ app = angular.module 'main', [
 	'ui.bootstrap'
 	'config'
 	'btford.socket-io'
+	'navigation'
+	'user-input-forms'
+	'links'
 ]
 
 app.factory 'socket', (socketFactory) ->
@@ -21,6 +24,22 @@ app.controller 'MainController', ($scope, $modal, socket, $log) ->
 	
 	$scope.userAuthenticated = userAuthenticated = false
 	loginAttempts = 0
+
+	userLogout = ->
+		socket.emit 'logout:user', {}
+		$scope.userAuthenticated = userAuthenticated = false
+		loginAttempts = 0
+
+	$scope.submitLink = (link) ->
+		socket.emit 'create:link',
+			url: link
+
+	$scope.submitIdLink = (data) ->
+		socket.emit 'create:id-link', data
+
+	$scope.submitGeoLink = (data) ->
+		socket.emit 'create:geo-link', data
+		window.location.replace 'http://kloce.com'
 
 	$scope.showLoginModal = showLoginModal = ->
 		$modal.open
@@ -52,27 +71,34 @@ app.controller 'MainController', ($scope, $modal, socket, $log) ->
 					$scope.cancel = ->
 						$modalInstance.dismiss 'cancel'
 
+	$scope.showAddLinkModal = showAddLinkModal = ->
+		$modal.open
+			templateUrl: '/partials/modals/add-link'
+			scope: $scope
+			controller: ($scope, $modalInstance, $log) ->
+				$scope.cancel = ->
+					$modalInstance.dismiss 'cancel'
 
-	$scope.submitLink = (link) ->
-		socket.emit 'create:link',
-			url: link
-
-	$scope.submitIdLink = (data) ->
-		socket.emit 'create:id-link', data
-
-	$scope.submitGeoLink = (data) ->
-		socket.emit 'create:geo-link', data
-		window.location.replace 'http://kloce.com'
+	$scope.showAddIdLinkModal = showAddIdLinkModal = ->
+		$modal.open
+			templateUrl: '/partials/modals/add-id-link'
+			scope: $scope
+			controller: ($scope, $modalInstance, $log) ->
+				$scope.cancel = ->
+					$modalInstance.dismiss 'cancel'
+	$scope.logout = ->
+		userLogout()
 
 	socket.on 'update:link-hit', (data) ->
 		$log.info data
 
-	socket.on 'authenticated:user', (data) ->
+	socket.on 'authenticate:user:success', (data) ->
 		if data
 			$scope.userAuthenticated = true
 			$scope.userData = data
 
-	socket.on 'authenticate-failed:user', (data) ->
+	socket.on 'authenticate:user:fail', (data) ->
+		userLogout()
 		$modal.open
 			templateUrl: '/partials/modals/failed-login'
 			scope: $scope
@@ -84,7 +110,7 @@ app.controller 'MainController', ($scope, $modal, socket, $log) ->
 				$scope.cancel = ->
 					$modalInstance.dismiss 'cancel'
 	
-	socket.on 'register-failed:user', (data) ->
+	socket.on 'register:user:error', (data) ->
 		$modal.open
 			templateUrl: '/partials/modals/error-notice'
 			scope: $scope
@@ -102,13 +128,13 @@ app.controller 'MainController', ($scope, $modal, socket, $log) ->
 	linkTrackerController = ($scope, $modalInstance, $log) ->
 		$scope.cancel = ->
 			$modalInstance.dismiss 'cancel'
-	socket.on 'created-success:link', (data) ->
+	socket.on 'create:link:success', (data) ->
 		$scope.linkData = data
 		$modal.open
 			templateUrl: '/partials/modals/live-link-tracker'
 			scope: $scope
 			controller: linkTrackerController
-	socket.on 'created-success:id-link', (data) ->
+	socket.on 'create:id-link:success', (data) ->
 		$scope.linkData = data
 		$modal.open
 			templateUrl: '/partials/modals/live-link-tracker'

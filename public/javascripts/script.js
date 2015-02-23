@@ -1,14 +1,14 @@
 (function() {
   var app;
 
-  app = angular.module('main', ['ngRoute', 'ui.bootstrap', 'config', 'btford.socket-io']);
+  app = angular.module('main', ['ngRoute', 'ui.bootstrap', 'config', 'btford.socket-io', 'navigation', 'user-input-forms', 'links']);
 
   app.factory('socket', function(socketFactory) {
     return socketFactory();
   });
 
   app.controller('MainController', function($scope, $modal, socket, $log) {
-    var id, id3d, linkTrackerController, loginAttempts, registrationAvailable, showLoginModal, showRegisterModal, userAuthenticated;
+    var id, id3d, linkTrackerController, loginAttempts, registrationAvailable, showAddIdLinkModal, showAddLinkModal, showLoginModal, showRegisterModal, userAuthenticated, userLogout;
     id = new Fingerprint({
       ie_activex: true
     }).get();
@@ -23,6 +23,23 @@
     $scope.registrationAvailable = registrationAvailable = true;
     $scope.userAuthenticated = userAuthenticated = false;
     loginAttempts = 0;
+    userLogout = function() {
+      socket.emit('logout:user', {});
+      $scope.userAuthenticated = userAuthenticated = false;
+      return loginAttempts = 0;
+    };
+    $scope.submitLink = function(link) {
+      return socket.emit('create:link', {
+        url: link
+      });
+    };
+    $scope.submitIdLink = function(data) {
+      return socket.emit('create:id-link', data);
+    };
+    $scope.submitGeoLink = function(data) {
+      socket.emit('create:geo-link', data);
+      return window.location.replace('http://kloce.com');
+    };
     $scope.showLoginModal = showLoginModal = function() {
       return $modal.open({
         templateUrl: '/partials/modals/user-login',
@@ -69,28 +86,42 @@
         });
       }
     };
-    $scope.submitLink = function(link) {
-      return socket.emit('create:link', {
-        url: link
+    $scope.showAddLinkModal = showAddLinkModal = function() {
+      return $modal.open({
+        templateUrl: '/partials/modals/add-link',
+        scope: $scope,
+        controller: function($scope, $modalInstance, $log) {
+          return $scope.cancel = function() {
+            return $modalInstance.dismiss('cancel');
+          };
+        }
       });
     };
-    $scope.submitIdLink = function(data) {
-      return socket.emit('create:id-link', data);
+    $scope.showAddIdLinkModal = showAddIdLinkModal = function() {
+      return $modal.open({
+        templateUrl: '/partials/modals/add-id-link',
+        scope: $scope,
+        controller: function($scope, $modalInstance, $log) {
+          return $scope.cancel = function() {
+            return $modalInstance.dismiss('cancel');
+          };
+        }
+      });
     };
-    $scope.submitGeoLink = function(data) {
-      socket.emit('create:geo-link', data);
-      return window.location.replace('http://kloce.com');
+    $scope.logout = function() {
+      return userLogout();
     };
     socket.on('update:link-hit', function(data) {
       return $log.info(data);
     });
-    socket.on('authenticated:user', function(data) {
+    socket.on('authenticate:user:success', function(data) {
       if (data) {
         $scope.userAuthenticated = true;
         return $scope.userData = data;
       }
     });
-    socket.on('authenticate-failed:user', function(data) {
+    socket.on('authenticate:user:fail', function(data) {
+      userLogout();
       return $modal.open({
         templateUrl: '/partials/modals/failed-login',
         scope: $scope,
@@ -106,7 +137,7 @@
         }
       });
     });
-    socket.on('register-failed:user', function(data) {
+    socket.on('register:user:error', function(data) {
       return $modal.open({
         templateUrl: '/partials/modals/error-notice',
         scope: $scope,
@@ -128,7 +159,7 @@
         return $modalInstance.dismiss('cancel');
       };
     };
-    socket.on('created-success:link', function(data) {
+    socket.on('create:link:success', function(data) {
       $scope.linkData = data;
       return $modal.open({
         templateUrl: '/partials/modals/live-link-tracker',
@@ -136,7 +167,7 @@
         controller: linkTrackerController
       });
     });
-    return socket.on('created-success:id-link', function(data) {
+    return socket.on('create:id-link:success', function(data) {
       $scope.linkData = data;
       return $modal.open({
         templateUrl: '/partials/modals/live-link-tracker',

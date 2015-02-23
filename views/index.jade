@@ -1,7 +1,11 @@
 extends layout
 
 block content
-	.container-fluid
+	main-nav(ng-show='userAuthenticated')
+	.container-fluid(ng-show='userAuthenticated')
+		links-overview
+
+	.container-fluid(ng-hide='userAuthenticated')
 		.row.heading
 			button.pull-right.button.btn.btn-primary(ng-click='showLoginModal()', ng-show='!userAuthenticated') Login
 			.page-header.logo
@@ -16,12 +20,7 @@ block content
 						span.glyphicon.glyphicon-link
 						| &nbsp;Live Link Tracking:
 					p Use live links to share content and track its consumption across social networks, the web or group messaging in real-time.
-					.input-group
-						input.form-control(ng-model='url', type='text', placeholder='Paste a link to track it live')
-						span.input-group-btn
-							button.btn.btn-primary(type='button', ng-click='submitLink(url)')
-								span.glyphicon.glyphicon-link
-								| &nbsp;Live Track!
+					add-link
 					small Ideal for knowing when someone clicks your facebook, twitter or other social links.
 		.row
 			.col-xs-12
@@ -30,21 +29,8 @@ block content
 						span.glyphicon.glyphicon-user
 						| &nbsp;Identify Users and Track them in Real-Time
 					p Give this link to an individual so that you can identify them when they visit your links or web pages.
-					.container-fluid.form-inputs
-						.row
-							.col-xs-12
-								input.form-control(ng-model='idLinkData.url', type='text', placeholder='Paste a link to share with an individual')
-							.col-xs-12.col-sm-6		
-								input.form-control(ng-model='idLinkData.firstName', type='text', placeholder='First Name (optional)')
-							.col-xs-12.col-sm-6
-								input.form-control(ng-model='idLinkData.lastName', type='text', placeholder='Last Name (optional)')
-							.col-xs-12
-								input.form-control(ng-model='idLinkData.email', type='text', placeholder='E-Mail Address (optional)')
-							small The first person to click this link will be considered to be the person to whom this identity belongs.
-							button.btn.btn-primary.pull-right(type='button', ng-click='submitIdLink(idLinkData)')
-								span.glyphicon.glyphicon-link
-								| &nbsp;Create ID Link
-							.clearfix
+					add-id-link
+					small The first person to click this link will be considered to be the person to whom this identity belongs.
 		.row
 			.col-xs-12
 				.jumbotron

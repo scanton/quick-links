@@ -1,0 +1,6 @@
+.input-group
+	input.form-control(ng-model='url', type='text', placeholder='Paste a link to track it live')
+	span.input-group-btn
+		button.btn.btn-primary(type='button', ng-click='submitLink(url)')
+			span.glyphicon.glyphicon-link
+			| &nbsp;Live Track!

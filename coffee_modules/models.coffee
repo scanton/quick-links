@@ -25,7 +25,7 @@ module.exports =
 		signedCookies: Object
 		subdomains: Array
 		xhr: Boolean
-		created: { type: Date, default: Date.now }
+		created: { type: Date, default: Date.now, required: true }
 	)
 	Identity: mongoose.model('Identity',
 		firstName: {type:String , trim: true }
@@ -34,8 +34,8 @@ module.exports =
 		sig: String
 		sig3d: String
 		ip: String
-		modified: { type: Date, default: Date.now }
-		created: { type: Date, default: Date.now }
+		modified: { type: Date, default: Date.now, required: true }
+		created: { type: Date, default: Date.now, required: true }
 	)
 	IpDetail: mongoose.model('IpDetail',
 		ipAddress: { type: String, unique: true, required: true }
@@ -46,12 +46,12 @@ module.exports =
 		stateRegion: String
 		city: String
 		coordinates: Array
-		modified: { type: Date, default: Date.now }
-		created: { type: Date, default: Date.now }
+		modified: { type: Date, default: Date.now, required: true }
+		created: { type: Date, default: Date.now, required: true }
 	)
 	Link: mongoose.model('Link',
 		url: String
-		hashId: { type: String, unique: true }
+		hashId: { type: String, unique: true, required: true }
 		creator: { type: MongoId, ref: 'User' }
 		hits: [
 			type: MongoId
@@ -59,13 +59,13 @@ module.exports =
 		]
 		intendedRecepient: { type: MongoId, ref: 'Identity' }
 		isActive: { type: Boolean, default: 1 }
-		created: { type: Date, default: Date.now }
+		created: { type: Date, default: Date.now, required: true }
 	)
 	User: mongoose.model('User',
 		firstName: String
 		lastName: String
-		username: { type: String, unique: true }
-		password: String
-		isActive: { type: Boolean, default: 1 }
-		created: { type: Date, default: Date.now }
+		username: { type: String, unique: true, required: true }
+		password: { type: String, required: true }
+		isActive: { type: Boolean, default: 1 , required: true}
+		created: { type: Date, default: Date.now, required: true }
 	)

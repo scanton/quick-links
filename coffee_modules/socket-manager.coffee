@@ -40,12 +40,12 @@ module.exports = (io) ->
 			if regData && regData.firstName && regData.lastName && regData.username && regData.password
 				db.registerUser regData, (userData) ->
 					if userData
-						socket.emit 'register-success:user', userData
+						socket.emit 'register:user:success', userData
 						info.authenticated = true
 						info.userData = userData
-						socket.emit 'authenticated:user', userData
+						socket.emit 'authenticate:user:success', userData
 					else
-						socket.emit 'register-failed:user', 'registration error'
+						socket.emit 'register:user:error', 'registration error'
 
 		socket.on 'authenticate:user', (authData) ->
 			if authData && authData.username && authData.password
@@ -53,24 +53,26 @@ module.exports = (io) ->
 					if userData
 						info.authenticated = true
 						info.userData = userData
-						socket.emit 'authenticated:user', userData
+						socket.emit 'authenticate:user:success', userData
 					else
 						info.authenticated = info.userData = false;
-						socket.emit 'authenticate-failed:user', 'invalid user credentials'
+						socket.emit 'authenticate:user:fail', 'invalid user credentials'
+		socket.on 'logout:user', ->
+			info.authenticated = false;
+			i = info.userData
+			socket.emit 'logout:user:success', i.firstName + ' ' + i.lastName + ' logged out'
 
 		socket.on 'get:ip-detail', (ip) ->
 			if ip
 				db.getIpDetail ip, (data) ->
 					if data
 						data.ip = ip
-						console.log ' pulling from cache ' + ip
-						socket.emit 'result:ip-detail', data
+						socket.emit 'get:ip-detail:result', data
 					else
-						console.log ' crawling for : ' + ip
 						ipFreely.getIpData ip, (data) ->
 							if data
 								data.ip = ip
-								socket.emit 'result:ip-detail', data
+								socket.emit 'get:ip-detail:result', data
 								db.upsertIpDetail data
 
 		socket.on 'create:link', (data) ->
@@ -79,8 +81,9 @@ module.exports = (io) ->
 					if hashId
 						data.hashId = hashId
 						db.upsertLink data, (rows) ->
-							socket.emit 'created-success:link', rows
+							socket.emit 'create:link:success', rows
 			else
+				socket.emit 'create:link:error', 'invalid url'
 				socket.emit 'error', 'create:link error'
 
 		socket.on 'create:id-link', (data) ->
@@ -89,10 +92,12 @@ module.exports = (io) ->
 					if hashId
 						db.upsertIdentity data, (result) ->
 							db.upsertLink {url: data.url, hashId: hashId, intendedRecepient: result._id}, (rows) ->
-								socket.emit 'created-success:id-link', rows
+								socket.emit 'create:id-link:success', rows
 					else
+						socket.emit 'create:id-link:error', 'invalid hashId'
 						socket.emit 'error', 'create:id-link error - no hashId'
 			else
+				socket.emit 'create:id-link:error', 'invalid link data'
 				socket.emit 'error', 'create:id-link error - no data'
 
 	emitLinkHit: (data) ->

@@ -1,0 +1,13 @@
+.container-fluid.form-inputs
+	.row
+		.col-xs-12
+			input.form-control(ng-model='idLinkData.url', type='text', placeholder='Paste a link to share with an individual')
+		.col-xs-12.col-sm-6		
+			input.form-control(ng-model='idLinkData.firstName', type='text', placeholder='First Name (optional)')
+		.col-xs-12.col-sm-6
+			input.form-control(ng-model='idLinkData.lastName', type='text', placeholder='Last Name (optional)')
+		.col-xs-12
+			input.form-control(ng-model='idLinkData.email', type='text', placeholder='E-Mail Address (optional)')
+		button.btn.btn-primary.pull-right(type='button', ng-click='submitIdLink(idLinkData)')
+			span.glyphicon.glyphicon-link
+			| &nbsp;Create ID Link
