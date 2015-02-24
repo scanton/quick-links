@@ -7,28 +7,34 @@ encrypt = (str) ->
 	.update str + salt
 	.digest 'hex'
 
-getAll = (model, query, callback) ->
+getAll = (model, query, callback, errorHandler) ->
 	model.find(
 		query
 		(err, data) ->
-			console.error err if err
-			callback data if callback
+			if err && errorHandler
+				errorHandler err
+			if callback
+				callback data
 	) if model
-getOne = (model, query, callback) ->
+getOne = (model, query, callback, errorHandler) ->
 	model.findOne(
 		query
 		(err, data) ->
-			console.error err if err
-			callback data if callback
+			if err && errorHandler
+				errorHandler err
+			if callback
+				callback data
 	) if model
-upsert = (model, query, data, callback) ->
+upsert = (model, query, data, callback, errorHandler) ->
 	model.findOneAndUpdate(
 		query
 		{ $set: data }
 		{ upsert: true }
 		(err, rows) ->
-			console.log err if err
-			callback rows if callback
+			if err && errorHandler
+				errorHandler err
+			if callback
+				callback rows
 	) if model
 
 module.exports = 
@@ -57,11 +63,23 @@ module.exports =
 			console.error err if err
 			callback !rows
 
-	upsertIdentity: (data, callback) ->
+	insertIdentity: (data, callback) ->
 		if data && (data.firstName || data.lastName || data.email)
 			models.Identity.create data, (err, result) ->
 				console.error err if err
 				callback result if callback
+
+	getUserLinks: (userId, callback, errorHandler) ->
+		if userId
+			getAll models.Link, {creator: userId}, (rows) ->
+				callback rows if callback
+			, errorHandler
+
+	getLinkHitDetail: (hitIds, callback, errorHandler) ->
+		if hitIds
+			models.Hit.find { '_id': { $in: hitIds } }, (err, rows) ->
+				callback rows if callback
+			, errorHandler
 
 	getLinkByHash: (hashId, callback) ->
 		if hashId
@@ -73,13 +91,17 @@ module.exports =
 			getOne models.IpDetail, {ip: ip}, (result) ->
 				callback result if callback
 
-	upsertIpDetail: (data, callback) ->
+	insertIpDetail: (data, callback) ->
 		if data
-			upsert models.IpDetail, {ip: data.ip}, data, callback
+			models.IpDetail.create data, (err, result) ->
+				console.error err if err
+				callback result if callback
 
-	upsertLink: (data, callback) ->
+	insertLink: (data, callback) ->
 		if data && data.url && data.hashId
-			upsert models.Link, {hashId: data.hashId}, data, callback
+			models.Link.create data, (err, result) ->
+				console.error err if err
+				callback result if callback
 
 	insertHit: (data, callback) ->
 		if data

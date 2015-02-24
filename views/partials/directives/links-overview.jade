@@ -1,4 +1,9 @@
 .jumbotron
 	h2 Links Overview
 	ul.links-overview
-		li(ng-repeat='link in links') {{link.name}}
+		li(ng-repeat='link in userLinkData', ng-class="link.isActive ? 'active' : 'inactive'", data-created='{{link.created}}') 
+			span.glyphicon.glyphicon-menu-hamburger(ng-click='getHitDetails(link.hits)', ng-show='link.hits.length')
+			| &nbsp;{{link.url}} ({{link.hits.length}}) -&nbsp;
+			a(ng-href='/key/{{link.hashId}}') /key/{{link.hashId}}
+			ul.hits(ng-show='link.hitDetails')
+				li(ng-repeat='hit in link.hitDetails') {{hit}}

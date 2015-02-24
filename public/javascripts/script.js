@@ -1,11 +1,24 @@
 (function() {
-  var app;
+  var addHitDetails, app;
 
   app = angular.module('main', ['ngRoute', 'ui.bootstrap', 'config', 'btford.socket-io', 'navigation', 'user-input-forms', 'links']);
 
   app.factory('socket', function(socketFactory) {
     return socketFactory();
   });
+
+  addHitDetails = function(links, hits) {
+    var key, l;
+    if (links && hits) {
+      key = hits[0].hashId;
+      l = links.length;
+      while (l--) {
+        if (links[l].hashId === key) {
+          return links[l].hitDetails = hits;
+        }
+      }
+    }
+  };
 
   app.controller('MainController', function($scope, $modal, socket, $log) {
     var id, id3d, linkTrackerController, loginAttempts, registrationAvailable, showAddIdLinkModal, showAddLinkModal, showLoginModal, showRegisterModal, userAuthenticated, userLogout;
@@ -23,6 +36,7 @@
     $scope.registrationAvailable = registrationAvailable = true;
     $scope.userAuthenticated = userAuthenticated = false;
     loginAttempts = 0;
+    $scope.userLinkData = [];
     userLogout = function() {
       socket.emit('logout:user', {});
       $scope.userAuthenticated = userAuthenticated = false;
@@ -108,6 +122,9 @@
         }
       });
     };
+    $scope.getHitDetails = function(hits) {
+      return socket.emit('get:linkHitDetail', hits);
+    };
     $scope.logout = function() {
       return userLogout();
     };
@@ -148,6 +165,16 @@
         }
       });
     });
+    socket.on('get:userLinkData:result', function(data) {
+      $scope.userLinkData = data;
+      if (data.hits) {
+        return socket.emit('get:linkHitDetail', data.hits);
+      }
+    });
+    socket.on('get:linkHitDetail:result', function(hits) {
+      console.log(hits);
+      return addHitDetails($scope.userLinkData, hits);
+    });
     socket.on('warn', function(data) {
       return $log.warn(data);
     });
@@ -160,6 +187,7 @@
       };
     };
     socket.on('create:link:success', function(data) {
+      $scope.userLinkData.push(data);
       $scope.linkData = data;
       return $modal.open({
         templateUrl: '/partials/modals/live-link-tracker',
@@ -168,6 +196,7 @@
       });
     });
     return socket.on('create:id-link:success', function(data) {
+      $scope.userLinkData.push(data);
       $scope.linkData = data;
       return $modal.open({
         templateUrl: '/partials/modals/live-link-tracker',

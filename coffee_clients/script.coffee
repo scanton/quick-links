@@ -11,6 +11,14 @@ app = angular.module 'main', [
 app.factory 'socket', (socketFactory) ->
 	socketFactory()
 
+addHitDetails = (links, hits) ->
+	if links && hits
+		key = hits[0].hashId
+		l = links.length
+		while l--
+			if links[l].hashId == key
+				return links[l].hitDetails = hits
+
 app.controller 'MainController', ($scope, $modal, socket, $log) ->
 	id = new Fingerprint({ie_activex: true}).get()
 	id3d = new Fingerprint({canvas: true}).get()
@@ -24,6 +32,7 @@ app.controller 'MainController', ($scope, $modal, socket, $log) ->
 	
 	$scope.userAuthenticated = userAuthenticated = false
 	loginAttempts = 0
+	$scope.userLinkData = []
 
 	userLogout = ->
 		socket.emit 'logout:user', {}
@@ -86,6 +95,10 @@ app.controller 'MainController', ($scope, $modal, socket, $log) ->
 			controller: ($scope, $modalInstance, $log) ->
 				$scope.cancel = ->
 					$modalInstance.dismiss 'cancel'
+
+	$scope.getHitDetails = (hits) ->
+		socket.emit 'get:linkHitDetail', hits
+
 	$scope.logout = ->
 		userLogout()
 
@@ -118,6 +131,15 @@ app.controller 'MainController', ($scope, $modal, socket, $log) ->
 				$scope.cancel = ->
 					$modalInstance.dismiss 'cancel'
 	
+	socket.on 'get:userLinkData:result', (data) ->
+		$scope.userLinkData = data
+		if data.hits
+			socket.emit 'get:linkHitDetail', data.hits
+
+	socket.on 'get:linkHitDetail:result', (hits) ->
+		console.log hits
+		addHitDetails $scope.userLinkData, hits
+
 	socket.on 'warn', (data) ->
 		$log.warn data
 
@@ -129,12 +151,14 @@ app.controller 'MainController', ($scope, $modal, socket, $log) ->
 		$scope.cancel = ->
 			$modalInstance.dismiss 'cancel'
 	socket.on 'create:link:success', (data) ->
+		$scope.userLinkData.push data
 		$scope.linkData = data
 		$modal.open
 			templateUrl: '/partials/modals/live-link-tracker'
 			scope: $scope
 			controller: linkTrackerController
 	socket.on 'create:id-link:success', (data) ->
+		$scope.userLinkData.push data
 		$scope.linkData = data
 		$modal.open
 			templateUrl: '/partials/modals/live-link-tracker'
