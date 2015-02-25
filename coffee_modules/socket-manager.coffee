@@ -22,6 +22,12 @@ fetchUserLinkData = (userData, callback) ->
 		db.getUserLinks userData._id, (links) ->
 			callback links if callback
 
+joinRooms = (socket, list) ->
+	if socket && list
+		l = list.length
+		while l--
+			socket.join list[l].hashId
+
 module.exports = (io) ->
 
 	io.on 'connection', (socket) ->
@@ -50,6 +56,7 @@ module.exports = (io) ->
 						info.userData = userData
 						socket.emit 'authenticate:user:success', userData
 						fetchUserLinkData userData, (links) ->
+							joinRooms socket, links
 							socket.emit 'get:userLinkData:result', links
 					else
 						socket.emit 'register:user:error', 'registration error'
@@ -62,6 +69,7 @@ module.exports = (io) ->
 						info.userData = userData
 						socket.emit 'authenticate:user:success', userData
 						fetchUserLinkData userData, (links) ->
+							joinRooms socket, links
 							socket.emit 'get:userLinkData:result', links
 					else
 						info.authenticated = false
@@ -72,24 +80,17 @@ module.exports = (io) ->
 			i = info.userData
 			socket.emit 'logout:user:success', i.firstName + ' ' + i.lastName + ' logged out'
 
-		socket.on 'get:ip-detail', (ip) ->
-			if ip
-				db.getIpDetail ip, (data) ->
-					if data
-						data.ip = ip
-						socket.emit 'get:ip-detail:result', data
-					else
-						ipFreely.getIpData ip, (data) ->
-							if data
-								data.ip = ip
-								socket.emit 'get:ip-detail:result', data
-								db.insertIpDetail data
-
 		socket.on 'get:linkHitDetail', (arr) ->
 			if arr
 				db.getLinkHitDetail arr, (hits) ->
 					if hits
 						socket.emit 'get:linkHitDetail:result', hits
+						a = []
+						l = hits.length
+						while l--
+							a.push hits[l].ip
+						db.getIpDetailList a, (ipDetails) ->
+							socket.emit 'get:ipDetailList:result', ipDetails
 
 		socket.on 'create:link', (data) ->
 			if data.url
@@ -120,7 +121,35 @@ module.exports = (io) ->
 				socket.emit 'create:id-link:error', 'invalid link data'
 				socket.emit 'error', 'create:id-link error - no data'
 
+		socket.on 'get:ip-detail', (ip) ->
+			if ip
+				db.getIpDetail ip, (data) ->
+					if data
+						data.ip = ip
+						socket.emit 'get:ip-detail:result', data
+					else
+						ipFreely.getIpData ip, (data) ->
+							if data
+								data.ip = ip
+								socket.emit 'get:ip-detail:result', data
+								db.insertIpDetail data
+
 	emitLinkHit: (data) ->
-		if data && data.link && data.link.hashId
-			io.to data.link.hashId #room
+		if data && data.link && data.link.hashId && data.hit && data.hit.ip
+			ip = data.hit.ip
+			hashId = data.link.hashId
+			console.log '***emit link****'
+			console.log data
+			io.to hashId #room
 				.emit 'update:link-hit', data
+			db.getIpDetail ip, (ipDetail) ->
+				if ipDetail
+					ipDetail.ip = ip
+					io.to hashId
+						.emit 'get:ip-detail:result', ipDetail
+				else
+					ipFreely.getIpData ip, (ipDetail) ->
+						if ipDetail
+							ipDetail.ip = ip
+							io.to hashId
+								.emit 'get:ip-detail:result', ipDetail

@@ -1,10 +1,24 @@
 (function() {
   var addHitDetails, app;
 
-  app = angular.module('main', ['ngRoute', 'ui.bootstrap', 'config', 'btford.socket-io', 'navigation', 'user-input-forms', 'links']);
+  app = angular.module('main', ['ngRoute', 'ui.bootstrap', 'config', 'btford.socket-io', 'angularMoment', 'navigation', 'filters', 'user-input-forms', 'links']);
 
   app.factory('socket', function(socketFactory) {
     return socketFactory();
+  });
+
+  app.factory('ipDictionary', function() {
+    var details;
+    details = {};
+    return {
+      set: function(ip, data) {
+        return details[ip] = data;
+      },
+      get: function(ip) {
+        return details[ip];
+      },
+      details: details
+    };
   });
 
   addHitDetails = function(links, hits) {
@@ -20,7 +34,7 @@
     }
   };
 
-  app.controller('MainController', function($scope, $modal, socket, $log) {
+  app.controller('MainController', function($scope, $modal, socket, ipDictionary, $log) {
     var id, id3d, linkTrackerController, loginAttempts, registrationAvailable, showAddIdLinkModal, showAddLinkModal, showLoginModal, showRegisterModal, userAuthenticated, userLogout;
     id = new Fingerprint({
       ie_activex: true
@@ -172,8 +186,26 @@
       }
     });
     socket.on('get:linkHitDetail:result', function(hits) {
-      console.log(hits);
       return addHitDetails($scope.userLinkData, hits);
+    });
+    socket.on('get:ipDetail:result', function(ipDetail) {
+      if (ipDetail && ipDetail.ip) {
+        return ipDictionary.set(ipDetail.ip, ipDetail);
+      }
+    });
+    socket.on('get:ipDetailList:result', function(ipDetailList) {
+      var ipDetail, l;
+      console.log(ipDetailList);
+      if (ipDetailList) {
+        l = ipDetailList.length;
+        while (l--) {
+          ipDetail = ipDetailList[l];
+          if (ipDetail && ipDetail.ip) {
+            ipDictionary.set(ipDetail.ip, ipDetail);
+          }
+        }
+        return console.log(ipDictionary.details);
+      }
     });
     socket.on('warn', function(data) {
       return $log.warn(data);

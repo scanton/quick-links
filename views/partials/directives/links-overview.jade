@@ -6,5 +6,19 @@
 			span.glyphicon.glyphicon-triangle-bottom(ng-show='link.hitDetails')
 			| &nbsp;{{link.url}} ({{link.hits.length}} {{link.hits.length == 1 ? 'hit' : 'hits'}}) -&nbsp;
 			a(ng-href='/key/{{link.hashId}}') /key/{{link.hashId}}
-			ul.hits(ng-show='link.hitDetails')
-				li(ng-repeat='hit in link.hitDetails') {{hit}}
+			table.hits(ng-show='link.hitDetails')
+				tr
+					//th Browser
+					th 
+					th IP
+					th Language
+					th Referer
+					th Created
+				tr(ng-repeat='hit in link.hitDetails')
+					//td {{hit.userAgent}}
+					th 
+						img(ng-src='http://robohash.org/{{hit.sig3d}}?size=20x20&bgset=bg2')
+					td {{hit.ip}}
+					td {{hit.headers['accept-language'] | headerLanguages}}
+					td {{hit.headers['referer']}}
+					td(am-time-ago='hit.created', popover='{{hit.created}}', popover-trigger='mouseenter')

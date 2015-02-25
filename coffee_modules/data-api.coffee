@@ -86,6 +86,12 @@ module.exports =
 			getOne models.Link, {hashId: hashId}, (result) ->
 				callback result if callback
 
+	getIpDetailList: (list, callback, errorHandler) ->
+		if list
+			models.IpDetail.find { 'ipAddress': { $in: list } }, (err, rows) ->
+				callback rows if callback
+			, errorHandler
+
 	getIpDetail: (ip, callback) ->
 		if ip
 			getOne models.IpDetail, {ip: ip}, (result) ->

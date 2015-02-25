@@ -3,13 +3,23 @@ app = angular.module 'main', [
 	'ui.bootstrap'
 	'config'
 	'btford.socket-io'
+	'angularMoment'
 	'navigation'
+	'filters'
 	'user-input-forms'
 	'links'
 ]
 
 app.factory 'socket', (socketFactory) ->
 	socketFactory()
+
+app.factory 'ipDictionary', ->
+	details = {}
+	set: (ip, data) ->
+		details[ip] = data
+	get: (ip) ->
+		details[ip]
+	details: details
 
 addHitDetails = (links, hits) ->
 	if links && hits
@@ -19,7 +29,7 @@ addHitDetails = (links, hits) ->
 			if links[l].hashId == key
 				return links[l].hitDetails = hits
 
-app.controller 'MainController', ($scope, $modal, socket, $log) ->
+app.controller 'MainController', ($scope, $modal, socket, ipDictionary, $log) ->
 	id = new Fingerprint({ie_activex: true}).get()
 	id3d = new Fingerprint({canvas: true}).get()
 	
@@ -137,8 +147,21 @@ app.controller 'MainController', ($scope, $modal, socket, $log) ->
 			socket.emit 'get:linkHitDetail', data.hits
 
 	socket.on 'get:linkHitDetail:result', (hits) ->
-		console.log hits
 		addHitDetails $scope.userLinkData, hits
+	
+	socket.on 'get:ipDetail:result', (ipDetail) ->
+		if ipDetail && ipDetail.ip
+			ipDictionary.set ipDetail.ip, ipDetail
+
+	socket.on 'get:ipDetailList:result', (ipDetailList) ->
+		console.log ipDetailList
+		if ipDetailList
+			l = ipDetailList.length
+			while l--
+				ipDetail = ipDetailList[l]
+				if ipDetail && ipDetail.ip
+					ipDictionary.set ipDetail.ip, ipDetail
+			console.log ipDictionary.details
 
 	socket.on 'warn', (data) ->
 		$log.warn data

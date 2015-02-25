@@ -66,3 +66,6 @@ body {
   list-style: none;
   margin: 0.25em 0;
 }
+.links-overview .hits {
+  width: 100%;
+}
