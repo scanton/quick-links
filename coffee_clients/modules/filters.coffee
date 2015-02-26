@@ -23,3 +23,9 @@ app.filter 'headerLanguages', (langDict) ->
 			a = langs.split ';'
 			a = a[0].split ','
 			replaceLangs a
+
+app.filter 'ipLocation', (ipDictionary) ->
+	(ip) ->
+		d = ipDictionary.get ip
+		if d
+			d.city + ', ' + d.stateRegion + ', ' + d.country

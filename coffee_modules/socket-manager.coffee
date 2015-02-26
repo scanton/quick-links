@@ -28,6 +28,32 @@ joinRooms = (socket, list) ->
 		while l--
 			socket.join list[l].hashId
 
+deDup = (arr) ->
+	if arr
+		dict = {}
+		l = arr.length
+		cleanArr = []
+		while l--
+			x = arr[l]
+			if !dict[x]
+				cleanArr.unshift x
+				dict[x] = true
+		cleanArr
+
+getIpDetail = (ip, callback) ->
+	if ip
+		db.getIpDetail ip, (ipDetail) ->
+			if ipDetail
+				ipDetail.ip = ip
+				callback ipDetail if callback
+			else
+				ipFreely.getIpData ip, (ipDetail) ->
+					if ipDetail
+						ipDetail.ip = ip
+						db.insertIpDetail ipDetail
+						callback ipDetail if callback
+						
+
 module.exports = (io) ->
 
 	io.on 'connection', (socket) ->
@@ -46,6 +72,11 @@ module.exports = (io) ->
 			console.log '****** id:user ******'
 			console.log info
 			console.log '****** ******* ******'
+			getIpDetail info.ip, (detail) ->
+				console.log '****** detail:ip ******'
+				console.log detail
+				console.log '****** ******* ******'
+
 
 		socket.on 'register:user', (regData) ->
 			if regData && regData.firstName && regData.lastName && regData.username && regData.password
@@ -88,8 +119,9 @@ module.exports = (io) ->
 						a = []
 						l = hits.length
 						while l--
-							a.push hits[l].ip
-						db.getIpDetailList a, (ipDetails) ->
+							ip = hits[l].ip
+							a.push ip
+						db.getIpDetailList deDup(a), (ipDetails) ->
 							socket.emit 'get:ipDetailList:result', ipDetails
 
 		socket.on 'create:link', (data) ->
@@ -138,18 +170,10 @@ module.exports = (io) ->
 		if data && data.link && data.link.hashId && data.hit && data.hit.ip
 			ip = data.hit.ip
 			hashId = data.link.hashId
-			console.log '***emit link****'
-			console.log data
+
 			io.to hashId #room
 				.emit 'update:link-hit', data
-			db.getIpDetail ip, (ipDetail) ->
-				if ipDetail
-					ipDetail.ip = ip
-					io.to hashId
-						.emit 'get:ip-detail:result', ipDetail
-				else
-					ipFreely.getIpData ip, (ipDetail) ->
-						if ipDetail
-							ipDetail.ip = ip
-							io.to hashId
-								.emit 'get:ip-detail:result', ipDetail
+			getIpDetail ip, (detail) ->
+				io.to hashId
+					.emit 'get:ip-detail:result', detail
+

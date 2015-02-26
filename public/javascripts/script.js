@@ -51,6 +51,7 @@
     $scope.userAuthenticated = userAuthenticated = false;
     loginAttempts = 0;
     $scope.userLinkData = [];
+    $scope.ipUpdates = 0;
     userLogout = function() {
       socket.emit('logout:user', {});
       $scope.userAuthenticated = userAuthenticated = false;
@@ -143,7 +144,19 @@
       return userLogout();
     };
     socket.on('update:link-hit', function(data) {
-      return $log.info(data);
+      var l, ld, _results;
+      l = $scope.userLinkData.length;
+      _results = [];
+      while (l--) {
+        ld = $scope.userLinkData[l];
+        if (ld.hashId === data.link.hashId) {
+          ld.hitDetails.push(data.hit);
+          _results.push(ld.hits.push(data.hit._id));
+        } else {
+          _results.push(void 0);
+        }
+      }
+      return _results;
     });
     socket.on('authenticate:user:success', function(data) {
       if (data) {
@@ -195,7 +208,6 @@
     });
     socket.on('get:ipDetailList:result', function(ipDetailList) {
       var ipDetail, l;
-      console.log(ipDetailList);
       if (ipDetailList) {
         l = ipDetailList.length;
         while (l--) {
@@ -204,7 +216,7 @@
             ipDictionary.set(ipDetail.ip, ipDetail);
           }
         }
-        return console.log(ipDictionary.details);
+        return ++$scope.ipUpdates;
       }
     });
     socket.on('warn', function(data) {

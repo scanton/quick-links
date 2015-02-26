@@ -38,7 +38,7 @@ module.exports =
 		created: { type: Date, default: Date.now, required: true }
 	)
 	IpDetail: mongoose.model('IpDetail',
-		ipAddress: { type: String, unique: true, required: true }
+		ip: { type: String, unique: true, required: true }
 		addressType: String
 		isp: String
 		timezone: String

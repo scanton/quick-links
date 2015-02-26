@@ -10,15 +10,17 @@
 				tr
 					//th Browser
 					th 
-					th IP
+					//th IP
+					th Location
 					th Language
 					th Referer
 					th Created
 				tr(ng-repeat='hit in link.hitDetails')
 					//td {{hit.userAgent}}
-					th 
+					th(popover="{{hit.sig3d}}", popover-title='{{hit.ip}}', popover-trigger='mouseenter')
 						img(ng-src='http://robohash.org/{{hit.sig3d}}?size=20x20&bgset=bg2')
-					td {{hit.ip}}
+					//td {{hit.ip}}
+					td {{hit.ip | ipLocation:ipUpdates}}
 					td {{hit.headers['accept-language'] | headerLanguages}}
 					td {{hit.headers['referer']}}
 					td(am-time-ago='hit.created', popover='{{hit.created}}', popover-trigger='mouseenter')

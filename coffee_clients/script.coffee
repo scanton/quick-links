@@ -13,7 +13,7 @@ app = angular.module 'main', [
 app.factory 'socket', (socketFactory) ->
 	socketFactory()
 
-app.factory 'ipDictionary', ->
+app.factory 'ipDictionary', () ->
 	details = {}
 	set: (ip, data) ->
 		details[ip] = data
@@ -43,6 +43,7 @@ app.controller 'MainController', ($scope, $modal, socket, ipDictionary, $log) ->
 	$scope.userAuthenticated = userAuthenticated = false
 	loginAttempts = 0
 	$scope.userLinkData = []
+	$scope.ipUpdates = 0
 
 	userLogout = ->
 		socket.emit 'logout:user', {}
@@ -113,7 +114,12 @@ app.controller 'MainController', ($scope, $modal, socket, ipDictionary, $log) ->
 		userLogout()
 
 	socket.on 'update:link-hit', (data) ->
-		$log.info data
+		l = $scope.userLinkData.length
+		while l--
+			ld = $scope.userLinkData[l]
+			if ld.hashId == data.link.hashId
+				ld.hitDetails.push data.hit
+				ld.hits.push data.hit._id
 
 	socket.on 'authenticate:user:success', (data) ->
 		if data
@@ -154,14 +160,13 @@ app.controller 'MainController', ($scope, $modal, socket, ipDictionary, $log) ->
 			ipDictionary.set ipDetail.ip, ipDetail
 
 	socket.on 'get:ipDetailList:result', (ipDetailList) ->
-		console.log ipDetailList
 		if ipDetailList
 			l = ipDetailList.length
 			while l--
 				ipDetail = ipDetailList[l]
 				if ipDetail && ipDetail.ip
 					ipDictionary.set ipDetail.ip, ipDetail
-			console.log ipDictionary.details
+			++$scope.ipUpdates
 
 	socket.on 'warn', (data) ->
 		$log.warn data

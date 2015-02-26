@@ -39,4 +39,14 @@
     };
   });
 
+  app.filter('ipLocation', function(ipDictionary) {
+    return function(ip) {
+      var d;
+      d = ipDictionary.get(ip);
+      if (d) {
+        return d.city + ', ' + d.stateRegion + ', ' + d.country;
+      }
+    };
+  });
+
 }).call(this);

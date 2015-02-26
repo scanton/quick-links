@@ -88,7 +88,7 @@ module.exports =
 
 	getIpDetailList: (list, callback, errorHandler) ->
 		if list
-			models.IpDetail.find { 'ipAddress': { $in: list } }, (err, rows) ->
+			models.IpDetail.find { 'ip': { $in: list } }, (err, rows) ->
 				callback rows if callback
 			, errorHandler
 
