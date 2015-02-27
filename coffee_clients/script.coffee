@@ -108,7 +108,7 @@ app.controller 'MainController', ($scope, $modal, socket, ipDictionary, $log) ->
 					$modalInstance.dismiss 'cancel'
 
 	$scope.getHitDetails = (hits) ->
-		socket.emit 'get:linkHitDetail', hits
+		socket.emit 'get:link-hit-detail', hits
 
 	$scope.logout = ->
 		userLogout()
@@ -147,19 +147,20 @@ app.controller 'MainController', ($scope, $modal, socket, ipDictionary, $log) ->
 				$scope.cancel = ->
 					$modalInstance.dismiss 'cancel'
 	
-	socket.on 'get:userLinkData:result', (data) ->
+	socket.on 'get:user-link-data:result', (data) ->
 		$scope.userLinkData = data
 		if data.hits
-			socket.emit 'get:linkHitDetail', data.hits
+			socket.emit 'get:link-hit-detail', data.hits
 
-	socket.on 'get:linkHitDetail:result', (hits) ->
+	socket.on 'get:link-hit-detail:result', (hits) ->
 		addHitDetails $scope.userLinkData, hits
 	
-	socket.on 'get:ipDetail:result', (ipDetail) ->
+	socket.on 'get:ip-detail:result', (ipDetail) ->
 		if ipDetail && ipDetail.ip
 			ipDictionary.set ipDetail.ip, ipDetail
+			++$scope.ipUpdates
 
-	socket.on 'get:ipDetailList:result', (ipDetailList) ->
+	socket.on 'get:ip-detail-list:result', (ipDetailList) ->
 		if ipDetailList
 			l = ipDetailList.length
 			while l--

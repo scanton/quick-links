@@ -88,7 +88,7 @@ module.exports = (io) ->
 						socket.emit 'authenticate:user:success', userData
 						fetchUserLinkData userData, (links) ->
 							joinRooms socket, links
-							socket.emit 'get:userLinkData:result', links
+							socket.emit 'get:user-link-data:result', links
 					else
 						socket.emit 'register:user:error', 'registration error'
 
@@ -101,7 +101,7 @@ module.exports = (io) ->
 						socket.emit 'authenticate:user:success', userData
 						fetchUserLinkData userData, (links) ->
 							joinRooms socket, links
-							socket.emit 'get:userLinkData:result', links
+							socket.emit 'get:user-link-data:result', links
 					else
 						info.authenticated = false
 						socket.emit 'authenticate:user:fail', 'invalid user credentials'
@@ -111,18 +111,18 @@ module.exports = (io) ->
 			i = info.userData
 			socket.emit 'logout:user:success', i.firstName + ' ' + i.lastName + ' logged out'
 
-		socket.on 'get:linkHitDetail', (arr) ->
+		socket.on 'get:link-hit-detail', (arr) ->
 			if arr
 				db.getLinkHitDetail arr, (hits) ->
 					if hits
-						socket.emit 'get:linkHitDetail:result', hits
+						socket.emit 'get:link-hit-detail:result', hits
 						a = []
 						l = hits.length
 						while l--
 							ip = hits[l].ip
 							a.push ip
 						db.getIpDetailList deDup(a), (ipDetails) ->
-							socket.emit 'get:ipDetailList:result', ipDetails
+							socket.emit 'get:ip-detail-list:result', ipDetails
 
 		socket.on 'create:link', (data) ->
 			if data.url
@@ -170,10 +170,10 @@ module.exports = (io) ->
 		if data && data.link && data.link.hashId && data.hit && data.hit.ip
 			ip = data.hit.ip
 			hashId = data.link.hashId
-
 			io.to hashId #room
 				.emit 'update:link-hit', data
 			getIpDetail ip, (detail) ->
+				console.log detail
 				io.to hashId
 					.emit 'get:ip-detail:result', detail
 

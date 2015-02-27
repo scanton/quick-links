@@ -138,7 +138,7 @@
       });
     };
     $scope.getHitDetails = function(hits) {
-      return socket.emit('get:linkHitDetail', hits);
+      return socket.emit('get:link-hit-detail', hits);
     };
     $scope.logout = function() {
       return userLogout();
@@ -192,21 +192,22 @@
         }
       });
     });
-    socket.on('get:userLinkData:result', function(data) {
+    socket.on('get:user-link-data:result', function(data) {
       $scope.userLinkData = data;
       if (data.hits) {
-        return socket.emit('get:linkHitDetail', data.hits);
+        return socket.emit('get:link-hit-detail', data.hits);
       }
     });
-    socket.on('get:linkHitDetail:result', function(hits) {
+    socket.on('get:link-hit-detail:result', function(hits) {
       return addHitDetails($scope.userLinkData, hits);
     });
-    socket.on('get:ipDetail:result', function(ipDetail) {
+    socket.on('get:ip-detail:result', function(ipDetail) {
       if (ipDetail && ipDetail.ip) {
-        return ipDictionary.set(ipDetail.ip, ipDetail);
+        ipDictionary.set(ipDetail.ip, ipDetail);
+        return ++$scope.ipUpdates;
       }
     });
-    socket.on('get:ipDetailList:result', function(ipDetailList) {
+    socket.on('get:ip-detail-list:result', function(ipDetailList) {
       var ipDetail, l;
       if (ipDetailList) {
         l = ipDetailList.length;
