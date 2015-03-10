@@ -38,14 +38,17 @@ module.exports = (socketManager) ->
 			title: 'Kweak - Quick Links'
 
 	router.get '/key/:hashId', (req, res) ->
+		res.cookie 'referer', req.headers['referer']
 		res.render 'forward',
 			title: 'Kweak - Secure Links'
 			hashId: req.params.hashId
+			head: req.headers
 			
 	router.get '/unlock/:hashId/key/:sig/sum/:sig3d', (req, res) ->
 		hashId = req.params.hashId
 		sig = req.params.sig
 		sig3d = req.params.sig3d
+		req.headers.referer = req.cookies.referer
 		if hashId
 			db.getLinkByHash hashId, (linkData) ->
 				if linkData

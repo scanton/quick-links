@@ -21,6 +21,20 @@
 							.form-group
 								input.form-control(ng-model='regData.password', name='password', type='password', placeholder='Password')
 					.row
+						.col-xs-12 For 2nd Factor Authentication:
+							.container-fluid
+								.row
+									.col-xs-6
+										.form-group
+											input.form-control(ng-model='regData.phone', name='cell-phone', type='text', placeholder='Cell Phone #')
+									.col-xs-6
+										.form-group
+											select.form-control(ng-model='regData.carrier')
+												option(value='txt.att.net') AT&T
+												option(value='vzwpix.com') Verizon
+												option(value='tmomail.net') T-Mobile
+											| Carrier
+					.row
 						button.btn.btn-primary.pull-right(type='submit') Register
 						button.btn.btn-warning.pull-right(ng-click='cancel()') Cancel
 						.clearfix
